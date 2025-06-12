@@ -267,7 +267,7 @@ namespace Avatar
                 headTypeName = headTypeName.Substring(5);
             if (headTypeName.EndsWith("_Male"))
                 headTypeName = headTypeName.Substring(0, headTypeName.Length-5);
-            if (pawn.Drawer.renderer.CurRotDrawMode == RotDrawMode.Dessicated)
+            if (pawn.Drawer.renderer.CurRotDrawMode.ToString() == "Dessicated")
             {
                 headTypeName = "Skeleton";
                 skinColor = new (0.8f, 0.7f, 0.6f);
@@ -414,7 +414,7 @@ namespace Avatar
                 body_layers.Add(new AvatarLayer("Core/Unisex/Corpse/BodyScar" + ((Seed()%125)/25+1).ToString(), skinColor, 8));
             }
             #endif
-            if (pawn.Drawer.renderer.CurRotDrawMode == RotDrawMode.Rotting && !mod.settings.noCorpseGore)
+            if (pawn.Drawer.renderer.CurRotDrawMode.ToString() == "Rotting" && !mod.settings.noCorpseGore)
             {
                 layers.Add(new ("Core/Unisex/Corpse/Skeleton" + lifeStage, new (0.8f, 0.7f, 0.6f), 8));
                 foreach (AvatarLayer layer in body_layers)
@@ -549,7 +549,7 @@ namespace Avatar
                     }
                 }
                 #endif
-                if (pawn.Drawer.renderer.CurRotDrawMode == RotDrawMode.Rotting
+                if (pawn.Drawer.renderer.CurRotDrawMode.ToString() == "Rotting"
                     #if ANOMALY
                     || pawn.IsShambler
                     #endif
@@ -655,7 +655,7 @@ namespace Avatar
                     head_layers.Add(new AvatarLayer("Core/Unisex/Corpse/FaceScar" + ((Seed()%25)/5+1).ToString(), skinColor));
                 }
                 #endif
-                if (pawn.Drawer.renderer.CurRotDrawMode == RotDrawMode.Rotting && !mod.settings.noCorpseGore)
+                if (pawn.Drawer.renderer.CurRotDrawMode.ToString() == "Rotting" && !mod.settings.noCorpseGore)
                 {
                     layers.Add(new ("Core/Unisex/Corpse/Skull" + lifeStage, new (0.8f, 0.7f, 0.6f)));
                     foreach (AvatarLayer layer in head_layers)
@@ -758,7 +758,7 @@ namespace Avatar
                             }
                         }
                     }
-                    else if (h is Hediff_Injury injury && injury.IsPermanent() && pawn.Drawer.renderer.CurRotDrawMode != RotDrawMode.Dessicated)
+                    else if (h is Hediff_Injury injury && injury.IsPermanent() && pawn.Drawer.renderer.CurRotDrawMode.ToString() != "Dessicated")
                     {
                         string scarName = h.Part.def.defName + "_" + h.def.defName;
                         foreach (AvatarHeadHediffDef def in DefDatabase<AvatarHeadHediffDef>.AllDefs)
