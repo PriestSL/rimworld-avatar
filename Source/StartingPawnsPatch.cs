@@ -10,7 +10,7 @@ using HarmonyLib;
 namespace Avatar
 {
     // patch vanilla starting pawns to draw the avatars
-    #if !v1_5
+    #if v1_3 || v1_4
     [HarmonyPatch(typeof(Page_ConfigureStartingPawns), nameof(Page_ConfigureStartingPawns.DrawPortraitArea))]
     public static class StartingPawn_DrawPortraitArea_Patch
     {

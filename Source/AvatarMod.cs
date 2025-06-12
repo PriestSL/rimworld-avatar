@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using UnityEngine;
 using Verse;
-#if v1_5
+#if !(v1_3 || v1_4)
 using LudeonTK;
 #endif
 using RimWorld;
@@ -128,9 +128,9 @@ namespace Avatar
             }
             listingStandard.CheckboxLabeled("Show avatars in quest tab (experimental)", ref settings.showInQuestTab);
             listingStandard.GapLine();
-            listingStandard.Label("Path to the AI-gen executable");
+            listingStandard.Label((TaggedString)"Path to the AI-gen executable");
             settings.aiGenExecutable = listingStandard.TextEntry(settings.aiGenExecutable);
-            listingStandard.Label("Base prompts", -1, "Will be added before all other prompts.\n{age}, {gender}, {lifestage} will be replaced with their values.");
+            listingStandard.Label((TaggedString)"Base prompts", -1, "Will be added before all other prompts.\n{age}, {gender}, {lifestage} will be replaced with their values.");
             settings.aiGenPreamble = listingStandard.TextEntry(settings.aiGenPreamble);
             if (listingStandard.ButtonText("Reset to default"))
             {
@@ -229,12 +229,14 @@ namespace Avatar
                 foreach (var part in __instance.selected.PartsListForReading)
                 {
                     List<Pawn> partPawns;
-                    if (part is QuestPart_Hyperlinks hyperlinks)
-                        partPawns = hyperlinks.pawns?.Where(p => p.RaceProps.Humanlike).ToList();
-                    else if (part is QuestPart_PawnsArrive pawnsArrive)
+                    if (part is QuestPart_PawnsArrive pawnsArrive)
                         partPawns = pawnsArrive.pawns?.Where(p => p.RaceProps.Humanlike).ToList();
                     else if (part is QuestPart_ExtraFaction extraFaction)
                         partPawns = extraFaction.affectedPawns?.Where(p => p.RaceProps.Humanlike).ToList();
+                    #if v1_3 || v1_4 || v1_5
+                    else if (part is QuestPart_Hyperlinks hyperlinks)
+                        partPawns = hyperlinks.pawns?.Where(p => p.RaceProps.Humanlike).ToList();
+                    #endif
                     else
                         partPawns = part.QuestLookTargets.Where(x => x.Thing is Pawn p && p.RaceProps.Humanlike).Select(x => x.Thing).Cast<Pawn>().ToList();
                     foreach (Pawn pawn in partPawns)
