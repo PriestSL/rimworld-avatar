@@ -353,6 +353,7 @@ namespace Avatar
         public string aiGenExecutable = "";
         public string aiGenPreamble = "front portrait, {age}-year-old {gender} {lifestage}, ";
         public string aiGenPreambleDefault = "front portrait, {age}-year-old {gender} {lifestage}, ";
+        public float aiGenVanillaPortraitOffset = 0.5f;
 
         public override void ExposeData()
         {
@@ -374,6 +375,7 @@ namespace Avatar
             Scribe_Values.Look(ref noCorpseGore, "noCorpseGore");
             Scribe_Values.Look(ref aiGenExecutable, "aiGenExecutable");
             Scribe_Values.Look(ref aiGenPreamble, "aiGenPreamble");
+            Scribe_Values.Look(ref aiGenVanillaPortraitOffset, "aiGenVanillaPortraitOffset");
             if (hideBackground)
                 AvatarMod.mainManager.SetBGColor(new Color(0,0,0,0));
             else

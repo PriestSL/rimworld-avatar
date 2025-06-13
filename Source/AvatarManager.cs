@@ -1036,7 +1036,10 @@ namespace Avatar
         }
         public string GetPawnName()
         {
-            return pawn.Name.ToStringFull.Replace("'", "").Replace(" ", "_") + "_" + pawn.thingIDNumber.ToString();
+            string name = pawn.Name.ToStringFull.Replace("'", "").Replace(" ", "_");
+            foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+                name = name.Replace(c, '-');
+            return name + "_" + pawn.thingIDNumber.ToString();
         }
         public void TryGetStaticTexture()
         {
@@ -1049,8 +1052,15 @@ namespace Avatar
                 DateTime lastModified = System.IO.File.GetLastWriteTime(path);
                 if (lastModified != staticTextureLastModified)
                 {
-                    staticTexture.LoadImage(System.IO.File.ReadAllBytes(path));
-                    staticTextureLastModified = lastModified;
+                    try
+                    {
+                        staticTexture.LoadImage(System.IO.File.ReadAllBytes(path));
+                        staticTextureLastModified = lastModified;
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        // read failed: probably the image is still being written
+                    }
                 }
             }
             else if (staticTexture != null)
@@ -1265,8 +1275,10 @@ namespace Avatar
                 {
                     RenderTexture active = RenderTexture.active;
                     RenderTexture.active = PortraitsCache.Get(pawn, new Vector2(160, 160), Rot4.South, renderHeadgear: drawHeadgear, renderClothes: drawClothes);
+                    float offset = 160 * mod.settings.aiGenVanillaPortraitOffset;
                     vanillaPortrait = new (80, 96);
-                    vanillaPortrait.ReadPixels(new Rect(60, 80, 80, 96), 0, 0);
+                    vanillaPortrait.SetPixels(new Color[80*96]);
+                    vanillaPortrait.ReadPixels(new Rect(60, offset, 80, 96), 0, 0);
                     vanillaPortrait.Apply();
                     RenderTexture.active = active;
                 }
@@ -1309,6 +1321,18 @@ namespace Avatar
             Widgets.Label(new Rect(0f, 0f, rect.width, 35f), "Prompts");
             Text.Font = GameFont.Small;
             GUI.DrawTexture(new Rect(0f, 35f, 100f, 120f), manager.GetAvatar(false));
+            #if !v1_3
+            if (manager.useVanillaPortrait)
+            {
+                float oldOffset = AvatarManager.mod.settings.aiGenVanillaPortraitOffset;
+                Widgets.HorizontalSlider(new Rect(0f, 170f, 100f, 20f), ref AvatarManager.mod.settings.aiGenVanillaPortraitOffset, new FloatRange(0, 1), "Offset");
+                if (AvatarManager.mod.settings.aiGenVanillaPortraitOffset != oldOffset)
+                {
+                    AvatarManager.mod.settings.Write();
+                    manager.ClearCachedAvatar();
+                }
+            }
+            #endif
             curPrompts = Widgets.TextArea(new Rect(120f, 35f, rect.width / 2f + 60f, InitialSize.y - 95f), curPrompts);
             Text.Font = GameFont.Tiny;
             Widgets.Label(new Rect(120f, InitialSize.y - 60f, rect.width / 2f + 60f, 20f), "The base prompts (\"front portrait\" etc.) can be set in the mod settings.");
