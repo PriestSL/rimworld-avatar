@@ -24,14 +24,14 @@ namespace Avatar
         public static Dictionary<Pawn, AvatarManager> questTabManagers = new ();
         // each manager stores a pawn, if any, and the avatar texture
 
-        // [DebugAction("Avatar", "Reload Textures")]
-        // public static void ClearCachedTextures()
-        // {
-        //     foreach (KeyValuePair<string, Texture2D> kvp in cachedTextures)
-        //         UnityEngine.Object.Destroy(kvp.Value);
-        //     cachedTextures.Clear();
-        //     ClearCachedAvatars();
-        // }
+        [DebugAction("Avatar", "Reload Textures")]
+        public static void ClearCachedTextures()
+        {
+            foreach (KeyValuePair<string, Texture2D> kvp in cachedTextures)
+                UnityEngine.Object.Destroy(kvp.Value);
+            cachedTextures.Clear();
+            ClearCachedAvatars();
+        }
 
         public static void ClearCachedAvatars()
         {

@@ -114,5 +114,8 @@
         <li IfModActive="vanillaracesexpanded.sanguophage">Mods/VanillaExpanded/VRE_Sanguophages</li>
         <li IfModActive="vanillaracesexpanded.saurid">Mods/VanillaExpanded/VRE_Saurids</li>
     </v1.5>
+    <v1.6>
+        <li>/</li>
+        <li>1.6</li>
+    </v1.6>
 </loadFolders>
-
