@@ -57,12 +57,12 @@ namespace Avatar
             result.Apply();
             return result;
         }
-        public static Texture2D ProcessVanillaTexture(string texPath, (int, int) size, (int, int) scale, int yOffset, string recolor)
+        public static Texture2D ProcessVanillaTexture(VanillaTexOption opt, (int, int) size, (int, int) scale)
         // creates a copy of the texture, needs to be freed!
         {
-            if (!AvatarMod.cachedTextures.ContainsKey(texPath))
+            if (!AvatarMod.cachedTextures.ContainsKey(opt.texPath))
             {
-                Texture2D raw = ContentFinder<Texture2D>.Get(texPath);
+                Texture2D raw = ContentFinder<Texture2D>.Get(opt.texPath);
                 Texture2D resized = MakeReadableCopy(raw, scale.Item1, scale.Item2);
                 Texture2D result = new (size.Item1, size.Item2);
                 int xOffset = (scale.Item1-size.Item1)/2;
@@ -70,16 +70,18 @@ namespace Avatar
                 Texture2D grayPalette = LoadedModManager.GetMod<AvatarMod>().GetTexture("gray");
                 for (int y = 0; y < result.height; y++)
                 {
+                    // very stupid coordinate change
+                    int yCoord = ((opt.rescale && y < result.height/2) ? (y/2 + result.height/4) : y) + opt.offset;
                     for (int x = 0; x < result.width; x++)
                     {
-                        Color old = resized.GetPixel(x+xOffset,y+yOffset);
+                        Color old = resized.GetPixel(x+xOffset,yCoord);
                         if (old.a < 0.5)
                             result.SetPixel(x,y,new Color(0,0,0,0));
                         else {
                             float gray = (old.r+old.g+old.b)/3f;
-                            switch (recolor)
+                            switch (opt.recolor)
                             {
-                                case "yes":
+                                case RecolorOption.Yes:
                                     if (gray > 0.9)
                                         result.SetPixel(x,y,grayPalette.GetPixel(0,0));
                                     else if (gray > 0.3)
@@ -87,11 +89,11 @@ namespace Avatar
                                     else
                                         result.SetPixel(x,y,grayPalette.GetPixel(2,0));
                                     break;
-                                case "gray":
+                                case RecolorOption.Gray:
                                     gray = ((float)Math.Round(gray*5f)+2f)/7f;
                                     result.SetPixel(x,y,new Color(gray, gray, gray, 1f));
                                     break;
-                                case "no":
+                                case RecolorOption.No:
                                     result.SetPixel(x,y,old);
                                     break;
                             }
@@ -99,10 +101,10 @@ namespace Avatar
                     }
                 }
                 result.Apply();
-                AvatarMod.cachedTextures[texPath] = result;
+                AvatarMod.cachedTextures[opt.texPath] = result;
                 UnityEngine.Object.Destroy(resized);
             }
-            return MakeReadableCopy(AvatarMod.cachedTextures[texPath]);
+            return MakeReadableCopy(AvatarMod.cachedTextures[opt.texPath]);
         }
         public static void AddOutline(Texture2D texture)
         {

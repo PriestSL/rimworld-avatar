@@ -114,6 +114,27 @@ namespace Avatar
     }
     #endif
 
+    public enum RecolorOption : byte
+    {
+        Yes,
+        Gray,
+        No,
+    }
+    public class VanillaTexOption
+    {
+        public string texPath;
+        public int offset;
+        public RecolorOption recolor;
+        public bool rescale;
+        public VanillaTexOption(string texPath, int offset, RecolorOption recolor, bool rescale = false)
+        {
+            this.texPath = texPath;
+            this.offset = offset;
+            this.recolor = recolor;
+            this.rescale = rescale;
+        }
+    }
+
     public class AvatarLayer
     {
         public string texPath;
@@ -126,7 +147,9 @@ namespace Avatar
         public Color? colorB;
         public bool drawDexter = true;
         public bool drawSinister = true;
-        public (string, int, string)? fallback = null;
+        #nullable enable
+        public VanillaTexOption? fallback = null;
+        #nullable disable
         public int hideTop = 0;
         public int offset = 0;
         public AvatarLayer(string texPath, Color? color = null, int offset = 0)
@@ -147,17 +170,17 @@ namespace Avatar
             PawnRenderNodeProperties attachment = gene.def.renderNodeProperties[0];
             #endif
             Color color;
-            string recolor;
+            RecolorOption recolor;
             switch (attachment.colorType)
             {
                 #if v1_4
-                case GeneColorType.Hair: color = pawn.story.HairColor; recolor = "yes"; break;
-                case GeneColorType.Skin: color = pawn.story.SkinColor; recolor = "yes"; break;
+                case GeneColorType.Hair: color = pawn.story.HairColor; recolor = RecolorOption.Yes; break;
+                case GeneColorType.Skin: color = pawn.story.SkinColor; recolor = RecolorOption.Yes; break;
                 #else
-                case PawnRenderNodeProperties.AttachmentColorType.Hair: color = pawn.story.HairColor; recolor = "yes"; break;
-                case PawnRenderNodeProperties.AttachmentColorType.Skin: color = pawn.story.SkinColor; recolor = "yes"; break;
+                case PawnRenderNodeProperties.AttachmentColorType.Hair: color = pawn.story.HairColor; recolor = RecolorOption.Yes; break;
+                case PawnRenderNodeProperties.AttachmentColorType.Skin: color = pawn.story.SkinColor; recolor = RecolorOption.Yes; break;
                 #endif
-                default: color = attachment.color ?? Color.white; recolor = "gray"; break;
+                default: color = attachment.color ?? Color.white; recolor = RecolorOption.Gray; break;
             }
             string path;
             #if v1_4
@@ -177,7 +200,7 @@ namespace Avatar
             }
             offset = DefDatabase<AvatarGeneDef>.AllDefsListForReading.FirstOrFallback(def => def.geneName == gene.def.defName)?.offset ?? offset;
             AvatarLayer result = new (path, color);
-            result.fallback = (path + "_south", offset, recolor);
+            result.fallback = new VanillaTexOption(path + "_south", offset, recolor);
             return result;
         }
         #endif

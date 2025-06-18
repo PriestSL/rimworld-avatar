@@ -792,11 +792,11 @@ namespace Avatar
                 #endif
                 AvatarLayer beard = new (beardPath, hairColor, headAttachmentOffset);
                 if (beardPath == "BEARD")
-                    beard.fallback = (pawn.style.beardDef.texPath + "_south", 8, "yes");
+                    beard.fallback = new VanillaTexOption(pawn.style.beardDef.texPath + "_south", 8, RecolorOption.Yes);
                 AvatarLayer hair = new (hairPath, hairColor, headAttachmentOffset);
                 hair.hideTop = hairHideTop + headAttachmentOffset;
                 if (hairPath == "HAIR")
-                    hair.fallback = (pawn.story.hairDef.texPath + "_south", 4, "yes");
+                    hair.fallback = new VanillaTexOption(pawn.story.hairDef.texPath + "_south", 4, RecolorOption.Yes, true);
                 // gradient hair mod support
                 if (ModCompatibility.GradientHair_Loaded)
                 {
@@ -874,11 +874,11 @@ namespace Avatar
                     Texture2D texture = null;
                     Texture2D mask = null;
                     Texture2D alphaMask = null;
-                    if (layer.fallback is (string, int, string) fallback)
+                    if (layer.fallback != null)
                     {
                         // fallback to vanilla texture
-                        if (ContentFinder<Texture2D>.Get(fallback.Item1, false) != null)
-                            texture = TextureUtil.ProcessVanillaTexture(fallback.Item1, (width, height), (62,68), fallback.Item2, fallback.Item3);
+                        if (ContentFinder<Texture2D>.Get(layer.fallback.texPath, false) != null)
+                            texture = TextureUtil.ProcessVanillaTexture(layer.fallback, (width, height), (62,68));
                     }
                     else
                     {
@@ -905,7 +905,8 @@ namespace Avatar
                         // ad hoc stuff for gradient hair
                         if (!string.IsNullOrEmpty(layer.gradientMask))
                         {
-                            mask = TextureUtil.ProcessVanillaTexture(layer.gradientMask, (40,48), (62,68), 4, "no");
+                            VanillaTexOption opt = new (layer.gradientMask, 4, RecolorOption.No);
+                            mask = TextureUtil.ProcessVanillaTexture(opt, (40,48), (62,68));
                         }
 
                         for (int y = Math.Max(height-texture.height-layer.offset, 0);
