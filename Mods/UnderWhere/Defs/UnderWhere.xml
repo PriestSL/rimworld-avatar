@@ -3,7 +3,7 @@
 
     <Avatar.AvatarBodygearDef>
         <defName>UnderWhere_Bra</defName>
-        <femalePath>UnderWhere/Bra</femalePath>
+        <unisexPath>UnderWhere/Bra</unisexPath>
     </Avatar.AvatarBodygearDef>
 
     <Avatar.AvatarBodygearDef>
@@ -13,7 +13,7 @@
 
     <Avatar.AvatarBodygearDef>
         <defName>UnderWhere_Chestwrap</defName>
-        <femalePath>UnderWhere/Chestwrap</femalePath>
+        <unisexPath>UnderWhere/Chestwrap</unisexPath>
     </Avatar.AvatarBodygearDef>
 
     <Avatar.AvatarBodygearDef>
