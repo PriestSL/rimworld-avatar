@@ -190,13 +190,14 @@ namespace Avatar
             node.gene = gene;
             path = node.TexPathFor(pawn);
             #endif
-            int offset = 0;
+            int offset = 3;
             switch (gene.def.endogeneCategory)
             {
+                // XXX: I don't think these tags are actually being used...
                 case EndogeneCategory.Headbone:
-                case EndogeneCategory.Ears: offset = 2; break;
-                case EndogeneCategory.Nose: offset = 4; break;
-                case EndogeneCategory.Jaw:  offset = 6; break;
+                case EndogeneCategory.Ears: offset += 2; break;
+                case EndogeneCategory.Nose: offset += 4; break;
+                case EndogeneCategory.Jaw:  offset += 6; break;
             }
             offset = DefDatabase<AvatarGeneDef>.AllDefsListForReading.FirstOrFallback(def => def.geneName == gene.def.defName)?.offset ?? offset;
             AvatarLayer result = new (path, color);

@@ -906,7 +906,7 @@ namespace Avatar
                         if (!string.IsNullOrEmpty(layer.gradientMask))
                         {
                             VanillaTexOption opt = new (layer.gradientMask, 4, RecolorOption.No);
-                            mask = TextureUtil.ProcessVanillaTexture(opt, (40,48), (62,68));
+                            mask = TextureUtil.ProcessVanillaTexture(opt, (width, height), (62,68));
                         }
 
                         for (int y = Math.Max(height-texture.height-layer.offset, 0);
