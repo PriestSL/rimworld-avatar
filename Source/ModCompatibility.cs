@@ -16,6 +16,7 @@ namespace Avatar
         public static bool DBH_Loaded = ModsConfig.IsActive("Dubwise.DubsBadHygiene");
         public static bool FacialAnimation_Loaded = ModsConfig.IsActive("Nals.FacialAnimation");
         public static bool GradientHair_Loaded = ModsConfig.IsActive("automatic.gradienthair");
+        public static bool Intimacy_Loaded = ModsConfig.IsActive("LovelyDovey.Sex.WithEuterpe");
         public static bool Portraits_Loaded = ModsConfig.IsActive("twopenny.portraitsoftherim");
         public static bool RegrowthCore_Loaded = ModsConfig.IsActive("ReGrowth.BOTR.Core");
         public static bool RJW_Loaded = ModsConfig.IsActive("rim.job.world");
@@ -108,6 +109,20 @@ namespace Avatar
             return pawn.health.hediffSet.HasHediff((HediffDef) cachedDef["DubsBadHygiene.DubDef:Washing"]);
         }
 
+        public static bool GetIntimacyNudity(Pawn pawn)
+        {
+            var curDriver = pawn?.jobs?.curDriver;
+            try {
+                return (bool) GetFieldInfo("LoveyDoveySexWithEuterpe.JobDriver_Sex:IsCurrentlyLovin").GetValue(curDriver);
+            }
+            catch {}
+            try {
+                return (bool) GetFieldInfo("LoveyDoveySexWithEuterpe.JobDriver_Sex_Mechanitor:IsCurrentlyLovin").GetValue(curDriver);
+            }
+            catch {}
+            return false;
+        }
+
         public static bool GetRegrowthNudity(Pawn pawn)
         {
             #if v1_3
@@ -143,6 +158,8 @@ namespace Avatar
             bool nudity = false;
             if (ModCompatibility.DBH_Loaded)
                 nudity |= ModCompatibility.GetDBHNudity(pawn);
+            if (ModCompatibility.Intimacy_Loaded)
+                nudity |= ModCompatibility.GetIntimacyNudity(pawn);
             if (ModCompatibility.RegrowthCore_Loaded)
                 nudity |= ModCompatibility.GetRegrowthNudity(pawn);
             if (ModCompatibility.RJW_Loaded)
