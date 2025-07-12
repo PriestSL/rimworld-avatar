@@ -617,4 +617,21 @@
         <unisexPath>Core/Apparel/Headgear/CeremonialCultistMaskDread</unisexPath>
     </Avatar.AvatarHeadgearDef>
 
+    <Avatar.AvatarHeadgearDef>
+        <defName>Apparel_VacsuitHelmet</defName>
+        <hideHair>true</hideHair>
+        <unisexPath>Core/Apparel/Headgear/VacsuitHelmet</unisexPath>
+        <unisexChildPath>Core/Apparel/Headgear/VacsuitHelmetChild</unisexChildPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>Apparel_Vacsuit</defName>
+        <unisexPath>Core/Apparel/Vacsuit</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>Apparel_VacsuitChildren</defName>
+        <unisexPath>Core/Apparel/VacsuitChildren</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
 </Defs>
