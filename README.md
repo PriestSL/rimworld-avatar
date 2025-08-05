@@ -1,11 +1,31 @@
-Some experiments with AI Generation prompts
-For now it's: 
-- Added some more prompts as haircolor, headtype, bodytype etc (just attempt to see how it's will work, so **WIP**)
-- Increased resolution of vanilla portrait when using it on generation
-**ACHTUNG** I have coding experience, but never coded on C#, so it's mostly AI Generated!!! (By using Github Copilot with Claude Sonnet 4)
-On this repo published version is tested with game launch and portrait generation
+## Experiments with AI Generation Prompts
 
-------========ORIGINAL DESCRIPTION=======------
+I tried to reproduce generating portraits as explained in [guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3219670725), but with locale StableDiffusion I got only some cringe and not something similar as showed ingame. 
+So I managed to do some changes in code to provide better auto prompt, that depends on pawn. 
+
+### Recent Additions
+- **Enhanced Prompts**: Added support for additional character attributes
+  - Hair color variations
+  - Head type options  
+  - Body type configurations
+  - **Note**: This is currently a work in progress (WIP) to test functionality
+- **Improved Resolution**: Increased vanilla portrait resolution when using it for generation
+
+### Development Notice
+**ACHTUNG**: While I have coding experience, I have never coded in C#, so this project is mostly AI Generated using GitHub Copilot with Claude Sonnet 4.
+
+### Testing Status
+The published version in this repository has been tested with:
+- Game launch compatibility
+- Portrait generation functionality
+
+## TODO LIST
+- Generating better basic prompts
+- Using better vanilla portrait as input image
+- Exploring how is all works and improving it
+- Exploring [Python Script](https://github.com/deadmanIsARabbit/RimworldAvatarToStableDiffusion/) and StableDiffusion WebUI API to do better control over generating
+
+## ORIGINAL DESCRIPTION
 
 
 ![avatar](https://raw.githubusercontent.com/bolphen/rimworld-avatar/master/About/Preview.png)
