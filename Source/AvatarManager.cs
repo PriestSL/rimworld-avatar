@@ -1117,12 +1117,168 @@ namespace Avatar
                 System.IO.File.Move(path, backup);
             }
         }
+        
+        private string GetSkinColorDescription(Color skinColor) //TODO better algorithm and more colors
+        {
+            // Convert RGB values to approximate skin tone descriptions
+            float r = skinColor.r;
+            float g = skinColor.g;
+            float b = skinColor.b;
+            
+            if (r > 0.9f && g > 0.8f && b > 0.7f) return "pale skin";
+            if (r > 0.8f && g > 0.7f && b > 0.6f) return "fair skin";
+            if (r > 0.7f && g > 0.6f && b > 0.5f) return "light skin";
+            if (r > 0.6f && g > 0.5f && b > 0.4f) return "medium skin";
+            if (r > 0.5f && g > 0.4f && b > 0.3f) return "olive skin";
+            if (r > 0.4f && g > 0.3f && b > 0.2f) return "tan skin";
+            if (r > 0.3f && g > 0.2f && b > 0.1f) return "brown skin";
+            return "dark skin";
+        }
+        
+        private string GetHairColorDescription(Color hairColor) //TODO better algorithm and more colors
+        {
+            // Convert RGB values to hair color descriptions
+            float r = hairColor.r;
+            float g = hairColor.g;
+            float b = hairColor.b;
+            
+            if (r > 0.9f && g > 0.9f && b > 0.8f) return "white hair";
+            if (r > 0.8f && g > 0.8f && b > 0.8f) return "platinum blonde hair";
+            if (r > 0.9f && g > 0.8f && b > 0.6f) return "blonde hair";
+            if (r > 0.7f && g > 0.5f && b > 0.3f) return "brown hair";
+            if (r > 0.8f && g > 0.4f && b > 0.2f) return "auburn hair";
+            if (r > 0.6f && g > 0.2f && b > 0.1f) return "red hair";
+            if (r < 0.3f && g < 0.3f && b < 0.3f) return "black hair";
+            if (r > 0.4f && g > 0.4f && b > 0.4f) return "gray hair";
+            return "dark hair";
+        }
+        
+        private string GetHeadTypeDescription()
+        {
+            //TODO IDK what AI meant in this, need explore and rework
+            #if v1_3
+            string headTypeName = pawn.story.HeadGraphicPath.Split('/').Last();
+            headTypeName = headTypeName.Remove(headTypeName.LastIndexOf('_'), 1);
+#else
+            string headTypeName = pawn.story.headType.defName;
+            #endif
+            
+            // Clean up head type name for better prompt usage
+            if (headTypeName.StartsWith("Female_"))
+                headTypeName = headTypeName.Substring(7);
+            if (headTypeName.EndsWith("_Female"))
+                headTypeName = headTypeName.Substring(0, headTypeName.Length-7);
+            if (headTypeName.StartsWith("Male_"))
+                headTypeName = headTypeName.Substring(5);
+            if (headTypeName.EndsWith("_Male"))
+                headTypeName = headTypeName.Substring(0, headTypeName.Length-5);
+                
+            return headTypeName.ToLower();
+        }
+        
+        private string GetBodyTypeDescription() //TODO AI do it same as gender, need rework
+        {
+            // Try to determine body type based on available information
+            if (pawn.ageTracker.CurLifeStage.defName.Contains("Child") || 
+                pawn.ageTracker.CurLifeStage.defName.Contains("Baby") ||
+                pawn.ageTracker.CurLifeStage.defName.Contains("Toddler"))
+                return "child";
+            
+            if (pawn.gender == Gender.Female)
+                return "female";
+            else
+                return "male";
+        }
+        
+        private string GetInjuriesDescription()
+        {
+            List<string> injuries = new List<string>();
+            
+            foreach (var hediff in pawn.health.hediffSet.hediffs)
+            {
+                if (hediff is Hediff_MissingPart missingPart && missingPart.Part != null)
+                {
+                    injuries.Add($"missing {missingPart.Part.def.defName.ToLower()}");
+                }
+                else if (hediff is Hediff_Injury injury && injury.IsPermanent() && hediff.Part != null)
+                {
+                    injuries.Add($"{hediff.Part.def.defName.ToLower()} scar");
+                }
+                else if (hediff is Hediff_AddedPart addedPart && addedPart.Part != null)
+                {
+                    injuries.Add($"prosthetic {addedPart.Part.def.defName.ToLower()}");
+                }
+            }
+            
+            return injuries.Count > 0 ? string.Join(", ", injuries) : "no visible injuries";
+        }
+        
+        private string GetTraitsDescription()
+        {
+            List<string> traitDescriptions = new List<string>();
+            
+            foreach (var trait in pawn.story.traits.allTraits)
+            {
+                // Convert trait names to more descriptive text for AI prompts
+                string traitName = trait.def.defName.ToLower();
+                
+                // Map some common traits to better descriptions
+                switch (traitName) //TODO check which traits AI got, add more
+                {
+                    case "beauty":
+                        traitDescriptions.Add(trait.Degree > 0 ? "beautiful" : "ugly");
+                        break;
+                    case "bodymastery":
+                        traitDescriptions.Add("glowing eyes");
+                        break;
+                    case "psychopath":
+                        traitDescriptions.Add("cold expression");
+                        break;
+                    case "kind":
+                        traitDescriptions.Add("kind expression");
+                        break;
+                    case "volatile":
+                        traitDescriptions.Add("intense expression");
+                        break;
+                    case "neurotic":
+                        traitDescriptions.Add("anxious expression");
+                        break;
+                    default:
+                        // For unknown traits, just use the name
+                        traitDescriptions.Add(traitName.Replace("_", " "));
+                        break;
+                }
+            }
+            
+            return traitDescriptions.Count > 0 ? string.Join(", ", traitDescriptions) : "no notable traits";
+        }
+        
         public string GetPrompts()
         {
+            //TODO checkbox with "extended prompting"
             string prompts_joind = mod.settings.aiGenPreamble
                 .Replace("{age}", pawn.ageTracker.AgeBiologicalYears.ToString())
                 .Replace("{gender}", (pawn.gender == Gender.Female) ? "female" : "male")
-                .Replace("{lifestage}", pawn.ageTracker.CurLifeStage.defName.Substring(9).ToLower());
+                .Replace("{lifestage}", pawn.ageTracker.CurLifeStage.defName.Substring(9).ToLower())
+                .Replace("{race}", (pawn.RaceProps.AnyPawnKind?.race.defName ?? "Human") == "Human" ? "" : (pawn.RaceProps.AnyPawnKind?.race.defName ?? ""))
+                .Replace("{skincolor}", GetSkinColorDescription(pawn.story.SkinColor))
+                .Replace("{haircolor}", GetHairColorDescription(pawn.story.hairColor)) //TODO need better algorithms and more color names
+                .Replace("{hairstyle}", (pawn.story.hairDef?.defName ?? "Bald") == "Bald" ? "" : (pawn.story.hairDef?.defName ?? "")) //TODO game have technical names, so need to try to catch more descriptive name
+                .Replace("{headtype}", GetHeadTypeDescription())
+                .Replace("{bodytype}", GetBodyTypeDescription())
+                .Replace("{beardstyle}", (pawn.style.beardDef?.defName ?? "NoBeard") == "NoBeard" ? "" : (pawn.style.beardDef?.defName ?? ""))
+                .Replace("{facetattoo}", (pawn.style.faceTattoo?.defName ?? "NoTattoo_Face") == "NoTattoo_Face" ? "" : (pawn.style.faceTattoo?.defName ?? ""))
+                .Replace("{bodytattoo}", (pawn.style.bodyTattoo?.defName ?? "NoTattoo_Body") == "NoTattoo_Body" ? "" : (pawn.style.bodyTattoo?.defName ?? ""))
+                .Replace("{injuries}", GetInjuriesDescription() == "no visible injuries" ? "" : GetInjuriesDescription())
+                .Replace("{traits}", GetTraitsDescription() == "no notable traits" ? "" : GetTraitsDescription());
+
+            // Clean up extra commas and spaces from empty replacements
+            //TODO bad cleaning, need fix
+            prompts_joind = System.Text.RegularExpressions.Regex.Replace(prompts_joind, @",\s*,", ",");
+            prompts_joind = System.Text.RegularExpressions.Regex.Replace(prompts_joind, @",\s*([,\.])", "$1");
+            prompts_joind = System.Text.RegularExpressions.Regex.Replace(prompts_joind, @"\s+", " ");
+            prompts_joind = prompts_joind.Trim().TrimEnd(',');
+            
             HashSet<string> prompts = new ();
             if (ShouldShowWrinkles())
                 prompts.Add(DefDatabase<AIGenPromptDef>.GetNamedSilentFail("Wrinkles")?.prompt ?? "");
@@ -1182,7 +1338,7 @@ namespace Avatar
                             }
                         }
                         else
-                            prompts.Add(apparel.def.label);
+                            prompts.Add(apparel.def.label.Replace("(", " ").Replace(")", " "));
                     }
                 }
             }
@@ -1274,12 +1430,13 @@ namespace Avatar
             {
                 if (vanillaPortrait == null)
                 {
+                    //TODO explore which resolution we can really use, pawns with NL Faces looks really good as input image
                     RenderTexture active = RenderTexture.active;
-                    RenderTexture.active = PortraitsCache.Get(pawn, new Vector2(160, 160), Rot4.South, renderHeadgear: drawHeadgear, renderClothes: drawClothes);
-                    float offset = 160 * mod.settings.aiGenVanillaPortraitOffset;
-                    vanillaPortrait = new (80, 96);
-                    vanillaPortrait.SetPixels(new Color[80*96]);
-                    vanillaPortrait.ReadPixels(new Rect(60, offset, 80, 96), 0, 0);
+                    RenderTexture.active = PortraitsCache.Get(pawn, new Vector2(320, 320), Rot4.South, renderHeadgear: drawHeadgear, renderClothes: drawClothes);
+                    float offset = 320 * mod.settings.aiGenVanillaPortraitOffset;
+                    vanillaPortrait = new (160, 192);
+                    vanillaPortrait.SetPixels(new Color[160*192]);
+                    vanillaPortrait.ReadPixels(new Rect(120, offset, 160, 192), 0, 0);
                     vanillaPortrait.Apply();
                     RenderTexture.active = active;
                 }

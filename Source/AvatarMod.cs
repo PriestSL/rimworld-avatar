@@ -130,7 +130,7 @@ namespace Avatar
             listingStandard.GapLine();
             listingStandard.Label((TaggedString)"Path to the AI-gen executable");
             settings.aiGenExecutable = listingStandard.TextEntry(settings.aiGenExecutable);
-            listingStandard.Label((TaggedString)"Base prompts", -1, "Will be added before all other prompts.\n{age}, {gender}, {lifestage} will be replaced with their values.");
+            listingStandard.Label((TaggedString)"Base prompts", -1, "Will be added before all other prompts.\nAvailable replacements: {age}, {gender}, {lifestage}, {race}, {skincolor}, {haircolor}, {hairstyle}, {headtype}, {bodytype}, {beardstyle}, {facetattoo}, {bodytattoo}, {injuries}, {traits}");
             settings.aiGenPreamble = listingStandard.TextEntry(settings.aiGenPreamble);
             if (listingStandard.ButtonText("Reset to default"))
             {
@@ -351,8 +351,8 @@ namespace Avatar
         public bool noCorpseGore = false;
 
         public string aiGenExecutable = "";
-        public string aiGenPreamble = "front portrait, {age}-year-old {gender} {lifestage}, ";
-        public string aiGenPreambleDefault = "front portrait, {age}-year-old {gender} {lifestage}, ";
+        public string aiGenPreamble = "front portrait, {age}-year-old {gender} {lifestage}, {race}, {skincolor}, {haircolor}, {hairstyle}, {headtype}, {bodytype}, {beardstyle}, {facetattoo}, {bodytattoo}, {injuries}, {traits}";
+        public string aiGenPreambleDefault = "front portrait, {age}-year-old {gender} {lifestage}, {race}, {skincolor}, {haircolor}, {hairstyle}, {headtype}, {bodytype}, {beardstyle}, {facetattoo}, {bodytattoo}, {injuries}, {traits}";
         public float aiGenVanillaPortraitOffset = 0.5f;
 
         public override void ExposeData()
